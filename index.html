@@ -1,0 +1,2704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixel Font Studio - Retro Font &amp; Tile Workshop</title>
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --bg-panel: #131d2e;
+      --bg-panel-light: #1e293b;
+      --bg-panel-hover: #273549;
+      --border-color: #334155;
+      --border-focus: #38bdf8;
+      --accent: #10b981;
+      --accent-hover: #059669;
+      --accent-active: #047857;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --danger: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* HEADER */
+    header {
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-color);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #34d399;
+      letter-spacing: 0.5px;
+    }
+
+    .brand span {
+      background: #064e3b;
+      color: #a7f3d0;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      border: 1px solid #059669;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 6px;
+      background: var(--bg-dark);
+      padding: 3px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+    }
+
+    .nav-tab-btn {
+      padding: 6px 14px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      transition: all 0.15s ease;
+    }
+
+    .nav-tab-btn.active {
+      background: var(--bg-panel-light);
+      color: #38bdf8;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    select, button, input[type="text"], input[type="number"], textarea {
+      background: var(--bg-panel-light);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      outline: none;
+      transition: all 0.15s ease;
+      touch-action: manipulation;
+    }
+
+    input, textarea {
+      user-select: text;
+      -webkit-user-select: text;
+      cursor: text;
+    }
+
+    select:hover, button:hover, input:hover {
+      border-color: #64748b;
+    }
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 600;
+    }
+
+    button.btn-primary {
+      background: var(--accent);
+      color: #022c22;
+      border-color: var(--accent);
+    }
+
+    button.btn-primary:hover {
+      background: var(--accent-hover);
+    }
+
+    button.btn-action {
+      background: #2563eb;
+      border-color: #1d4ed8;
+      color: #ffffff;
+    }
+
+    button.btn-action:hover {
+      background: #1d4ed8;
+    }
+
+    button.btn-save {
+      background: #059669;
+      border-color: #047857;
+      color: #ffffff;
+    }
+
+    button.btn-save:hover {
+      background: #047857;
+    }
+
+    /* MAIN CONTAINER */
+    main {
+      flex: 1;
+      display: flex;
+      height: calc(100vh - 58px);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .app-view {
+      flex: 1;
+      display: none;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .app-view.active {
+      display: grid;
+    }
+
+    /* VIEW 1: STUDIO VIEW (Grid 3 Columns) */
+    #viewStudio {
+      grid-template-columns: 260px 1fr 280px;
+      gap: 12px;
+      padding: 12px;
+    }
+
+    @media (max-width: 1200px) {
+      #viewStudio {
+        grid-template-columns: 240px 1fr;
+      }
+      .right-column {
+        display: none !important;
+      }
+    }
+
+    @media (max-width: 850px) {
+      main {
+        height: auto;
+        min-height: calc(100vh - 58px);
+        overflow-y: auto;
+      }
+
+      #viewStudio {
+        display: flex;
+        flex-direction: column;
+        padding: 8px;
+        gap: 8px;
+      }
+
+      .workspace-center {
+        order: 1;
+        width: 100%;
+        padding: 8px;
+      }
+
+      .right-column {
+        display: none !important;
+      }
+
+      .desktop-only {
+        display: none !important;
+      }
+
+      .drawer-header-mobile {
+        display: flex !important;
+      }
+
+      #panelCharList {
+        position: fixed !important;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: auto;
+        height: 75vh;
+        max-height: 80vh;
+        background: #0b1120;
+        border: 1px solid #38bdf8;
+        border-bottom: none;
+        border-radius: 18px 18px 0 0;
+        z-index: 1050;
+        box-shadow: 0 -12px 35px rgba(0, 0, 0, 0.85);
+        transform: translateY(105%);
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        padding: 12px 14px 24px 14px;
+        overflow-y: hidden;
+      }
+
+      #panelCharList.drawer-open {
+        transform: translateY(0);
+      }
+
+      .char-group-container {
+        max-height: calc(75vh - 120px);
+      }
+
+      /* Compact toolbar on small screens */
+      .quick-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+
+      .palette-swatches-top {
+        justify-content: center;
+      }
+
+      .top-tools {
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .canvas-container {
+        padding: 6px;
+      }
+
+      #pixelCanvas {
+        width: 100%;
+        max-width: min(92vw, 360px);
+        height: auto;
+      }
+    }
+
+    /* PANELS */
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+    }
+
+    .panel-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* LEFT SIDEBAR: CHARACTER LIST */
+    .char-search-box {
+      display: flex;
+      gap: 4px;
+    }
+
+    .char-group-container {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .char-group-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #38bdf8;
+      text-transform: uppercase;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .char-chip-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(32px, 1fr));
+      gap: 4px;
+    }
+
+    .char-chip {
+      height: 36px;
+      background: var(--bg-panel-light);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.1s ease;
+      position: relative;
+    }
+
+    .char-chip:hover {
+      background: var(--bg-panel-hover);
+      border-color: #38bdf8;
+    }
+
+    .char-chip.active {
+      background: #064e3b;
+      border-color: #10b981;
+      box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+    }
+
+    .char-chip-main {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: #facc15;
+      line-height: 1.1;
+    }
+
+    .char-chip-hex {
+      font-size: 0.58rem;
+      color: #94a3b8;
+      font-family: monospace;
+    }
+
+    /* CENTER: PIXEL CANVAS */
+    .workspace-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .canvas-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+      background: var(--bg-dark);
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      font-size: 0.8rem;
+    }
+
+    .tile-info-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .char-nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-char-nav {
+      background: var(--bg-panel-light);
+      border: 1px solid var(--border-color);
+      color: #94a3b8;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-char-nav:hover {
+      background: #1e293b;
+      color: #38bdf8;
+      border-color: #38bdf8;
+    }
+
+    .btn-char-picker {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-char-picker:hover {
+      background: #1e293b;
+      border-color: #38bdf8;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+    }
+
+    .char-picker-symbol {
+      color: #facc15;
+      font-size: 1.25rem;
+      font-weight: 800;
+      min-width: 22px;
+      text-align: center;
+      line-height: 1;
+    }
+
+    .char-picker-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1.1;
+    }
+
+    .char-picker-hex {
+      color: #38bdf8;
+      font-weight: 700;
+      font-size: 0.8rem;
+      font-family: monospace;
+    }
+
+    .char-picker-dec {
+      color: #64748b;
+      font-size: 0.65rem;
+    }
+
+    .char-picker-arrow {
+      color: #94a3b8;
+      font-size: 0.75rem;
+      margin-left: 2px;
+    }
+
+    .char-size-badge {
+      background: #1e1b4b;
+      color: #c7d2fe;
+      border: 1px solid #4338ca;
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .drawer-header-mobile {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .drawer-handle {
+      width: 40px;
+      height: 4px;
+      background: #475569;
+      border-radius: 2px;
+      margin-top: 2px;
+    }
+
+    .drawer-title-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.88rem;
+    }
+
+    .btn-close-drawer {
+      background: #1e293b;
+      border: 1px solid #475569;
+      color: #f1f5f9;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+
+    .drawer-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(2px);
+      z-index: 1040;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .drawer-backdrop.active {
+      display: block;
+      opacity: 1;
+    }
+
+    .tile-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-consonant {
+      background: #064e3b;
+      color: #a7f3d0;
+      border: 1px solid #059669;
+    }
+
+    .badge-vowel {
+      background: #78350f;
+      color: #fde68a;
+      border: 1px solid #d97706;
+    }
+
+    .badge-other {
+      background: #1e1b4b;
+      color: #c7d2fe;
+      border: 1px solid #6366f1;
+    }
+
+    .canvas-container {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      width: 100%;
+      padding: 12px;
+      background: #020617;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .quick-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      background: var(--bg-panel-light);
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+    }
+
+    .palette-swatches-top {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .top-tools {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    #pixelCanvas {
+      image-rendering: pixelated;
+      cursor: crosshair;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7);
+      touch-action: none;
+    }
+
+    .preview-bar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--bg-dark);
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .preview-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .preview-item span {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
+
+    .preview-box {
+      background: #1e293b;
+      border: 1px solid #475569;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      border-radius: 4px;
+    }
+
+    .preview-box canvas {
+      image-rendering: pixelated;
+    }
+
+    /* RIGHT COLUMN: TOOLS & PALETTE */
+    .palette-box {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .palette-swatches {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+    }
+
+    .swatch {
+      width: 36px;
+      height: 32px;
+      flex-shrink: 0;
+      border-radius: 5px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+      padding: 2px 4px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #000;
+      text-shadow: 0 0 2px rgba(255,255,255,0.8);
+      transition: transform 0.1s ease;
+    }
+
+    .swatch:hover {
+      transform: scale(1.05);
+    }
+
+    .swatch.active {
+      border-color: #38bdf8;
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+      transform: scale(1.05);
+    }
+
+    .swatch input[type="color"] {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      opacity: 0; cursor: pointer;
+    }
+
+    .tool-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .tool-btn {
+      padding: 7px 8px;
+      font-size: 0.78rem;
+      justify-content: center;
+    }
+
+    .tool-btn.active {
+      background: var(--accent);
+      color: #022c22;
+      border-color: var(--accent);
+    }
+
+    .nudge-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+    }
+
+    .nudge-grid button {
+      padding: 6px 0;
+      justify-content: center;
+      font-size: 0.85rem;
+    }
+
+    /* VIEW 2: DEDICATED TEST TAB */
+    #viewTesting {
+      padding: 24px;
+      max-width: 1000px;
+      margin: 0 auto;
+      display: none;
+      flex-direction: column;
+      gap: 18px;
+      overflow-y: auto;
+    }
+
+    #viewTesting.active {
+      display: flex;
+    }
+
+    .test-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .dialogue-preview-large {
+      background: #000;
+      border: 4px double #94a3b8;
+      border-radius: 8px;
+      padding: 16px;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      overflow-x: auto;
+    }
+
+    .dialogue-preview-large.gb-lcd {
+      background: #8bac0f;
+      border-color: #306230;
+    }
+
+    .quick-preset-btns {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .quick-preset-btns button {
+      padding: 4px 10px;
+      font-size: 0.78rem;
+    }
+
+    /* MODALS */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(3px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 20px;
+      max-width: 520px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.8);
+    }
+
+    .modal-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .wizard-option {
+      background: var(--bg-panel-light);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      transition: all 0.15s ease;
+    }
+
+    .wizard-option:hover {
+      border-color: #38bdf8;
+      background: var(--bg-panel-hover);
+    }
+
+    .wizard-option.selected {
+      border-color: #10b981;
+      background: #064e3b;
+    }
+
+    .wizard-option input[type="radio"] {
+      margin-top: 3px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #064e3b;
+      color: #a7f3d0;
+      border: 1px solid #059669;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
+      display: none;
+      z-index: 200;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    input[type="file"] { display: none; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand">
+      👾 Pixel Font Studio
+      <span>GB / SNES / GBA</span>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+      <button class="nav-tab-btn active" data-view="viewStudio">🎨 Font Studio</button>
+      <button class="nav-tab-btn" data-view="viewTesting">💬 Dialogue &amp; Tester</button>
+    </div>
+
+    <!-- Actions -->
+    <div class="header-actions">
+      <button id="btnNewProjectWizard">✨ New Project</button>
+      <button class="btn-save" id="btnQuickSave" title="Quick Save to disk / browser (Ctrl+S)">💾 Save (Ctrl+S)</button>
+      <button class="btn-primary" id="btnOpenExportModal">📦 Export Bundles</button>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main>
+    <!-- BACKDROP FOR MOBILE CHARACTER DRAWER -->
+    <div id="charDrawerBackdrop" class="drawer-backdrop"></div>
+
+    <!-- VIEW 1: STUDIO (DRAWING WORKSPACE) -->
+    <div class="app-view active" id="viewStudio">
+      
+      <!-- LEFT COLUMN: CHARACTER-DRIVEN LIST (Desktop Sidebar / Mobile Drawer) -->
+      <div class="panel" id="panelCharList">
+        <!-- Mobile Drawer Grabber & Header -->
+        <div class="drawer-header-mobile">
+          <div class="drawer-handle"></div>
+          <div class="drawer-title-row">
+            <span style="font-weight:700; color:#38bdf8;">📑 เลือกตัวอักษร (Pick Character)</span>
+            <button type="button" id="btnCloseCharDrawer" class="btn-close-drawer">✕ ปิด</button>
+          </div>
+        </div>
+
+        <div class="panel-title desktop-only">
+          <span>Characters</span>
+          <span style="font-size:0.7rem; color:#38bdf8;" id="lblSelectedCharSummary">ก (0xA1)</span>
+        </div>
+
+        <div class="char-search-box">
+          <input type="text" id="txtSearchChar" placeholder="🔍 ค้นหาตัวอักษร / 0xA1..." style="flex:1;">
+          <button id="btnResetSearch">✕</button>
+        </div>
+
+        <div class="char-group-container" id="charListContainer">
+          <!-- Dynamically populated character groups -->
+        </div>
+      </div>
+
+      <!-- CENTER COLUMN: TOP-ALIGNED PIXEL CANVAS & QUICK TOOLBAR -->
+      <div class="panel workspace-center" style="overflow-y:visible;">
+        <div class="canvas-bar">
+          <div class="tile-info-row">
+            <!-- Fast Character Navigation & Bottom Sheet Trigger -->
+            <div class="char-nav-controls">
+              <button type="button" id="btnPrevChar" class="btn-char-nav" title="Previous Tile [ or Alt+Left">◀</button>
+              
+              <button type="button" id="btnOpenCharPicker" class="btn-char-picker" title="เลือกตัวอักษร (คลิกเพื่อเปิดลิสต์ทั้งหมด)">
+                <span class="char-picker-symbol" id="lblActiveCharDisplay">ก</span>
+                <div class="char-picker-meta">
+                  <span class="char-picker-hex" id="lblActiveTileHex">0xA1</span>
+                  <span class="char-picker-dec" id="lblActiveTileDec">(161)</span>
+                </div>
+                <span class="char-picker-arrow">▾</span>
+              </button>
+
+              <button type="button" id="btnNextChar" class="btn-char-nav" title="Next Tile ] or Alt+Right">▶</button>
+              <span class="char-size-badge" id="lblActiveTileSize">8x8</span>
+            </div>
+
+            <div id="badgeTileGuide" class="tile-badge badge-consonant">พยัญชนะไทย (วาด 6 แถวล่าง)</div>
+          </div>
+
+          <!-- Quick Palette & Drawing Tools (Directly above Canvas!) -->
+          <div class="quick-toolbar">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">PALETTE:</span>
+              <div class="palette-swatches-top" id="paletteSwatches"></div>
+            </div>
+
+            <div class="top-tools">
+              <button class="tool-btn active" data-tool="pencil" id="toolPencil" style="padding:5px 8px;">✏️ [P]</button>
+              <button class="tool-btn" data-tool="eraser" id="toolEraser" style="padding:5px 8px;">🧹 [E]</button>
+              <button class="tool-btn" data-tool="fill" id="toolFill" style="padding:5px 8px;">🪣 [B]</button>
+              <button class="tool-btn" data-tool="picker" id="toolPicker" style="padding:5px 8px;">💧 [I]</button>
+              <button id="btnClearTile" style="color:#f87171; border-color:#7f1d1d; padding:5px 8px;" title="Clear Tile">🗑️ Clear</button>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 14px; align-items: center; flex-wrap:wrap; font-size:0.76rem; color:var(--text-muted);">
+            <label style="cursor:pointer;"><input type="checkbox" id="chkShowGrid" checked> Pixel Grid</label>
+            <label style="cursor:pointer;"><input type="checkbox" id="chkSplitGuide" checked> Thai Proportion Guide (2/6px)</label>
+            <label style="cursor:pointer;"><input type="checkbox" id="chkCenterCross"> Center Cross</label>
+          </div>
+        </div>
+
+        <!-- Top-Aligned Canvas Container -->
+        <div class="canvas-container">
+          <canvas id="pixelCanvas" width="384" height="384"></canvas>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: SCALE PREVIEWS & TRANSFORMS -->
+      <div class="panel right-column">
+        <div class="panel-title">Scale Previews</div>
+        <div class="preview-bar" style="padding:6px; gap:8px;">
+          <div class="preview-item">
+            <span>1x</span>
+            <div class="preview-box"><canvas id="prev1x" width="8" height="8"></canvas></div>
+          </div>
+          <div class="preview-item">
+            <span>2x</span>
+            <div class="preview-box"><canvas id="prev2x" width="16" height="16"></canvas></div>
+          </div>
+          <div class="preview-item">
+            <span>4x</span>
+            <div class="preview-box"><canvas id="prev4x" width="32" height="32"></canvas></div>
+          </div>
+          <div class="preview-item">
+            <span>8x</span>
+            <div class="preview-box"><canvas id="prev8x" width="64" height="64"></canvas></div>
+          </div>
+        </div>
+        <button id="btnSaveSingleTilePNG" style="font-size:0.75rem; justify-content:center;">🖼️ Save Tile PNG</button>
+
+        <div class="panel-title" style="margin-top:4px;">Palette System</div>
+        <div class="palette-box">
+          <select id="paletteSelect" style="width:100%;">
+            <option value="gb_dmg" selected>Game Boy DMG (Green)</option>
+            <option value="gb_pocket">GB Pocket (B&amp;W)</option>
+            <option value="gb_light">GB Light (Teal)</option>
+            <option value="snes_16">SNES 16-Color UI</option>
+            <option value="gba_16">GBA 16-Color</option>
+          </select>
+          <div style="font-size: 0.68rem; color: var(--text-muted); display:flex; justify-content:space-between; margin-top:2px;">
+            <span>Double-click color to edit</span>
+            <label style="cursor:pointer;"><input type="checkbox" id="chkTransparent0"> C0 Transparent</label>
+          </div>
+        </div>
+
+        <div class="panel-title" style="margin-top:4px;">Nudge &amp; Shift</div>
+        <div class="nudge-grid">
+          <button id="btnShiftUp" title="Shift Up">▲</button>
+          <button id="btnShiftDown" title="Shift Down">▼</button>
+          <button id="btnShiftLeft" title="Shift Left">◀</button>
+          <button id="btnShiftRight" title="Shift Right">▶</button>
+        </div>
+        <div class="tool-grid">
+          <button class="tool-btn" id="btnFlipH">↔ Flip H</button>
+          <button class="tool-btn" id="btnFlipV">↕ Flip V</button>
+          <button class="tool-btn" id="btnRotate">🔄 Rotate</button>
+          <button class="tool-btn" id="btnInvert">🌗 Invert</button>
+        </div>
+
+        <div class="panel-title" style="margin-top:4px;">History &amp; Clipboard</div>
+        <div class="tool-grid">
+          <button class="tool-btn" id="btnCopyTile">📋 Copy [Ctrl+C]</button>
+          <button class="tool-btn" id="btnPasteTile">📄 Paste [Ctrl+V]</button>
+          <button class="tool-btn" id="btnUndo">↩️ Undo [Ctrl+Z]</button>
+          <button class="tool-btn" id="btnRedo">↪️ Redo [Ctrl+Y]</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 2: DEDICATED TESTING & DIALOGUE TAB -->
+    <div class="app-view" id="viewTesting">
+      <div class="test-card">
+        <div class="panel-title">
+          <span>💬 Dialogue Box Simulator</span>
+          <select id="dialogueBgSelect" style="width:110px;">
+            <option value="lcd">GB LCD Green</option>
+            <option value="black" selected>Retro Dark Box</option>
+          </select>
+        </div>
+
+        <div class="modal-desc">
+          พิมพ์ทดสอบประโยคภาษาไทย ระบบจะจำลองการซ้อนสระลอยและวรรณยุกต์ (Zero-width stacking) บนกล่องข้อความเกมเรโทรให้อัตโนมัติ:
+        </div>
+
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="txtDialogueInput" value="สวัสดี เจ้าชายกบ 123" placeholder="พิมพ์ข้อความทดสอบที่นี่..." style="flex:1; font-size:1rem; padding:8px;">
+          <button id="btnClearDialogue">ล้างข้อความ</button>
+        </div>
+
+        <!-- Quick Words -->
+        <div class="quick-preset-btns">
+          <span style="font-size:0.75rem; color:var(--text-muted); align-self:center;">ตัวอย่างคำ:</span>
+          <button class="btnQuickWord" data-word="สวัสดี">สวัสดี</button>
+          <button class="btnQuickWord" data-word="เจ้าชายกบ">เจ้าชายกบ</button>
+          <button class="btnQuickWord" data-word="กินน้ำ">กินน้ำ</button>
+          <button class="btnQuickWord" data-word="ผู้กล้า">ผู้กล้า</button>
+          <button class="btnQuickWord" data-word="Kaeru no Tame ni">Kaeru no Tame ni</button>
+        </div>
+
+        <!-- Large Dialogue Preview Box -->
+        <div class="dialogue-preview-large" id="dialogueBox">
+          <canvas id="dialogueCanvas" height="32" width="600"></canvas>
+        </div>
+      </div>
+
+      <!-- Live Layer Compositor (Mixer) in Testing View -->
+      <div class="test-card">
+        <div class="panel-title">✨ Thai Glyph Compositor (ตรวจสอบการประกบตัวอักษร)</div>
+        <div class="modal-desc">
+          เลือกพยัญชนะประกบกับสระบนและวรรณยุกต์ เพื่อตรวจสอบความสมดุลของพิกเซล พร้อมขยับเลื่อนขึ้นลงได้:
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+          <div>
+            <label style="font-size:0.75rem; color:var(--text-muted);">พยัญชนะต้น (Base):</label>
+            <select id="compBaseTile" style="width:100%;"></select>
+          </div>
+          <div>
+            <label style="font-size:0.75rem; color:var(--text-muted);">สระบน (Vowel):</label>
+            <div style="display:flex; gap:4px;">
+              <select id="compVowelTile" style="flex:1;"></select>
+              <button id="btnVowelDyMinus">▲</button>
+              <button id="btnVowelDyPlus">▼</button>
+            </div>
+          </div>
+          <div>
+            <label style="font-size:0.75rem; color:var(--text-muted);">วรรณยุกต์ (Tone):</label>
+            <div style="display:flex; gap:4px;">
+              <select id="compToneTile" style="flex:1;"></select>
+              <button id="btnToneDyMinus">▲</button>
+              <button id="btnToneDyPlus">▼</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Composite Preview -->
+        <div style="display:flex; align-items:center; justify-content:center; gap:20px; background:#020617; padding:16px; border-radius:6px; border:1px solid var(--border-color); margin-top:8px;">
+          <div style="text-align:center;">
+            <canvas id="compCanvas1x" width="8" height="8" style="background:#000; border:1px solid #475569; image-rendering:pixelated;"></canvas>
+            <div style="font-size:0.65rem; color:var(--text-muted); margin-top:4px;">1x Actual</div>
+          </div>
+          <div style="text-align:center;">
+            <canvas id="compCanvas4x" width="32" height="32" style="background:#000; border:1px solid #475569; image-rendering:pixelated;"></canvas>
+            <div style="font-size:0.65rem; color:var(--text-muted); margin-top:4px;">4x Zoom</div>
+          </div>
+          <div style="text-align:center;">
+            <canvas id="compCanvas8x" width="64" height="64" style="background:#000; border:1px solid #475569; image-rendering:pixelated;"></canvas>
+            <div style="font-size:0.65rem; color:var(--text-muted); margin-top:4px;">8x Zoom</div>
+          </div>
+          <button class="btn-action" id="btnBakeToTile" style="margin-left:16px;">🥞 Bake เข้าสล็อตไทล์ใหม่</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL: NEW PROJECT WIZARD -->
+  <div class="modal-overlay" id="modalNewProject">
+    <div class="modal-card">
+      <div class="panel-title">
+        <span>✨ New Project Wizard</span>
+        <button id="btnCloseWizard" style="background:transparent; border:none; font-size:1.1rem;">✕</button>
+      </div>
+      <div class="modal-desc">
+        เลือกแพลตฟอร์มและแม่แบบตั้งต้นเพื่อเริ่มต้นสร้างชุดฟอนต์พิกเซลของคุณ:
+      </div>
+
+      <!-- Step 1: Platform & Size -->
+      <div>
+        <label style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">1. เลือกระบบเกม &amp; ขนาดไทล์ (Platform):</label>
+        <select id="wizardPlatformSelect" style="width:100%; margin-top:4px;">
+          <option value="gb_8x8" selected>Game Boy / GBC (8x8 Pixels) - มาตรฐาน Kaeru / Pokemon</option>
+          <option value="gb_8x16">Game Boy Tall (8x16 Pixels) - ฟอนต์ญี่ปุ่น 8x16</option>
+          <option value="snes_16x12">Super Famicom (16x12 Pixels) - มาตรฐาน Mahoujin Guruguru</option>
+          <option value="snes_16x16">SNES / GBA (16x16 Pixels) - ตัวอักษรใหญ่</option>
+        </select>
+      </div>
+
+      <!-- Step 2: Starting Template -->
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <label style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">2. เลือกรูปแบบตั้งต้น (Starting Template):</label>
+
+        <label class="wizard-option selected" id="optTplThai">
+          <input type="radio" name="wizTemplate" value="thai" checked>
+          <div>
+            <strong style="color:#38bdf8;">🟢 Thai Standard Template (แนะนำ)</strong>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
+              โหลดตารางตัวอักษรไทย (ก-ฮ, สระบน, วรรณยุกต์) พร้อมเส้นไกด์สัดส่วน 2px บน / 6px ล่างให้พร้อมวาด
+            </div>
+          </div>
+        </label>
+
+        <label class="wizard-option" id="optTplPNG">
+          <input type="radio" name="wizTemplate" value="png">
+          <div>
+            <strong style="color:#a7f3d0;">📂 เปิดจากไฟล์ภาพ PNG Sheet</strong>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
+              โหลดภาพ font_sheet.png หรือไฟล์ภาพ PNG จากคอมพิวเตอร์ของคุณเข้ามาเป็นฐาน
+            </div>
+          </div>
+        </label>
+
+        <label class="wizard-option" id="optTplBlank">
+          <input type="radio" name="wizTemplate" value="blank">
+          <div>
+            <strong>⚪ แผ่นเปล่า (Blank Workspace)</strong>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
+              เริ่มต้นจากตารางว่างเปล่าทั้งหมด 256 สล็อต
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <button class="btn-primary" id="btnCreateProjectSubmit" style="padding:10px; font-size:0.9rem; justify-content:center;">
+        🚀 เริ่มต้นสร้างโปรเจกต์
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: EXPORT BUNDLES -->
+  <div class="modal-overlay" id="modalExport">
+    <div class="modal-card">
+      <div class="panel-title">
+        <span>📦 Export Project &amp; Assets</span>
+        <button id="btnCloseExportModal" style="background:transparent; border:none; font-size:1.1rem;">✕</button>
+      </div>
+
+      <div class="modal-desc">
+        ส่งออกผลงานเพื่อนำไปใช้งานต่อกับโปรแกรมแปลเกม (RTHextion), YY-CHR, หรือเซฟเก็บไว้แก้ไข:
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <!-- Option 1: PNG Sheet -->
+        <div style="background:var(--bg-panel-light); border:1px solid var(--border-color); border-radius:6px; padding:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <strong style="color:#38bdf8;">1. ไฟล์ภาพ PNG Tile Sheet</strong>
+            <label style="font-size:0.75rem; cursor:pointer;"><input type="checkbox" id="chkExportTransparent"> พื้นหลังโปร่งใส (Transparent)</label>
+          </div>
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">
+            ภาพรวมไทล์ทั้งหมด (16 คอลัมน์) สามารถนำไปเปิดใน YY-CHR, Photoshop, หรือเครื่องมืออื่นได้ทันที
+          </div>
+          <button class="btn-primary" id="btnDownloadPNGSheet" style="width:100%; justify-content:center;">
+            💾 ดาวน์โหลด PNG Tile Sheet
+          </button>
+        </div>
+
+        <!-- Option 2: Table File (.tbl) -->
+        <div style="background:var(--bg-panel-light); border:1px solid var(--border-color); border-radius:6px; padding:12px;">
+          <strong style="color:#facc15;">2. ไฟล์ตารางภาษา (.tbl)</strong>
+          <div style="font-size:0.75rem; color:var(--text-muted); margin:4px 0 8px 0;">
+            ไฟล์ frog_thai.tbl ที่ผูกรหัส Hex ให้ตรงกับภาพไทล์ 100% สำหรับนำไปใส่โปรแกรม <strong>RTHextion</strong> เพื่อพิมพ์แปลเนื้อเรื่อง
+          </div>
+          <button id="btnDownloadTBLFile" style="width:100%; justify-content:center;">
+            📑 ดาวน์โหลดไฟล์ .tbl
+          </button>
+        </div>
+
+        <!-- Option 3: Project State (.json) -->
+        <div style="background:var(--bg-panel-light); border:1px solid var(--border-color); border-radius:6px; padding:12px;">
+          <strong style="color:#a7f3d0;">3. ไฟล์โปรเจกต์ (.json)</strong>
+          <div style="font-size:0.75rem; color:var(--text-muted); margin:4px 0 8px 0;">
+            เก็บบันทึกข้อมูลทั้งหมด (ไทล์, สี, และตาราง) เพื่อนำกลับมาเปิดแก้ไขต่อในอนาคต
+          </div>
+          <button id="btnDownloadProjectJSON" style="width:100%; justify-content:center;">
+            📦 ดาวน์โหลด Project .json
+          </button>
+        </div>
+
+        <!-- GB 2BPP Binary -->
+        <button id="btnDownloadGBBinary" style="font-size:0.75rem; justify-content:center;">
+          🕹️ ส่งออก Game Boy Binary (2BPP .bin)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DIRECT DISK SAVE PROMPT (ON FIRST CTRL+S) -->
+  <div class="modal-overlay" id="modalDiskSaveSetup">
+    <div class="modal-card">
+      <div class="panel-title">
+        <span>💾 ตั้งค่าการบันทึกลงเครื่อง (Save to Disk)</span>
+        <button id="btnCloseDiskSaveSetup" style="background:transparent; border:none; font-size:1.1rem;">✕</button>
+      </div>
+      <div class="modal-desc">
+        คุณต้องการให้การกดบันทึกด่วน (<strong>Ctrl+S</strong>) ผูกและเขียนทับไฟล์ประเภทใดบนคอมพิวเตอร์ของคุณ?
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <label class="wizard-option selected" id="optSaveTargetPNG">
+          <input type="radio" name="diskSaveTarget" value="png" checked>
+          <div>
+            <strong style="color:#38bdf8;">🖼️ ผูกกับไฟล์ภาพ PNG Tile Sheet (แนะนำ)</strong>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
+              กด Ctrl+S แล้วเขียนทับไฟล์ font_sheet.png บนเครื่องทันที เพื่อเปิดดูใน YY-CHR หรือโปรแกรมอื่นได้สดๆ
+            </div>
+          </div>
+        </label>
+
+        <label class="wizard-option" id="optSaveTargetJSON">
+          <input type="radio" name="diskSaveTarget" value="json">
+          <div>
+            <strong style="color:#a7f3d0;">📦 ผูกกับไฟล์ Project (.json)</strong>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
+              กด Ctrl+S แล้วเขียนทับไฟล์ Project .json เพื่อเก็บการตั้งค่าและตารางภาษาครบถ้วน
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <button class="btn-save" id="btnConfirmDiskSaveTarget" style="padding:10px; justify-content:center;">
+        🔗 เลือกไฟล์บนเครื่องเพื่อเริ่ม Sync
+      </button>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast" id="appToast">✓ บันทึกข้อมูลเรียบร้อยแล้ว!</div>
+
+  <!-- HIDDEN INPUTS -->
+  <input type="file" id="fileInputPNG" accept="image/png,image/bmp">
+  <input type="file" id="fileInputJSON" accept=".json">
+
+  <!-- EMBEDDED DATA -->
+  <script>
+    const EMBEDDED_THAI_TBL = {"50": "A", "51": "B", "52": "C", "53": "D", "54": "E", "55": "F", "56": "G", "57": "H", "58": "I", "59": "J", "5A": "K", "5B": "L", "5C": "M", "5D": "N", "5E": "O", "5F": "P", "60": "Q", "61": "R", "62": "S", "63": "T", "64": "U", "65": "V", "66": "W", "67": "X", "68": "Y", "69": "Z", "6E": "a", "6F": "b", "70": "c", "71": "d", "72": "e", "73": "f", "74": "g", "75": "h", "76": "i", "77": "j", "78": "k", "79": "l", "7A": "m", "7B": "n", "7C": "o", "7D": "p", "7E": "q", "7F": "r", "80": "s", "81": "t", "82": "u", "83": "v", "84": "w", "85": "x", "86": "y", "87": "z", "A1": "ก", "A2": "ข", "A3": "ฃ", "A4": "ค", "A5": "ฅ", "A6": "ฆ", "A7": "ง", "A8": "จ", "A9": "ฉ", "AA": "ช", "AB": "ซ", "AC": "ฌ", "AD": "ญ", "AE": "ฎ", "AF": "ฏ", "B0": "ฐ", "B1": "ฑ", "B2": "ฒ", "B3": "ณ", "B4": "ด", "B5": "ต", "B6": "ถ", "B7": "ท", "B8": "ธ", "B9": "น", "BA": "บ", "BB": "ป", "BC": "ผ", "BD": "ฝ", "BE": "พ", "BF": "ฟ", "C0": "ภ", "C1": "ม", "C2": "ย", "C3": "ร", "C4": "ล", "C5": "ว", "C6": "ศ", "C7": "ษ", "C8": "ส", "C9": "ห", "CA": "ฬ", "CB": "อ", "CC": "ฮ", "DA": "เ", "DB": "แ", "DC": "โ", "DD": "ใ", "DE": "ไ", "DF": "ะ", "E0": "ั", "E1": "ิ", "E2": "ี", "E3": "ึ", "E4": "ื", "E5": "ุ", "E6": "ู", "E7": "่", "E8": "้", "E9": "๊", "EA": "๋", "EB": "์", "EC": "า", "ED": "ำ", "FE": "", "FF": "[END]"};
+    const DEFAULT_FONT_SHEET_DATA_URL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAIAAABMXPacAAAH3ElEQVR4nO1dQXLkKgzt6cp+rvMPxjLLLH2Duco/3K/8dBEapKcnjC13Rq+y6MJYyAjQk8DOr9///L4l4nAPbDuRBohHzoBgpAGCkQYIRhogGGmAYLxFNbx9RLV8LeQMCEYaIBhpgGCkAYKRBghGGuCn09D3cnQLr41ff/7N/YBI5BIUjDRAMNIAwUgDBCMNEIw0QDDSAMFIAwQjDRCMNEAw0gDBSAMEIw0QjDRAMNIAlzdAef/8EwvFS/tRFLG1XFNJu0VT0lt+lRnwpd/28ThctVzd7cMoHytUw/DAlburBw21yS3Jow+1lXe5iVreVWi7Rrt3FNX92D6ETj/h+N7nlmQd0d7uuMIhwyINzLE3a/ncLcfhbRxWjOVFm40PcIJttuc+bZepTh9wCQs/b1MeT4U9AAbbVjSnTUcwTUHr3aXjuqV3wtWvMhRoP7az5ofYEG79tHU18lhKOcXLXRyCAdp+aUc6M7u1+tpyXJRyIL+916wPnksjVObtmg5Mv43lPQ0FjpRpWKvPsPsWQL6GL9fqmlJ8/ZG28mJx/zz5AJ5EMz07jUJYdFQVK8/UNx9fnHO8OxTlv2GFXHwfRwyjnOKUvyrq9rKar+cSn64yWpLEq0uQZsxxUZvznPz6U6SVdExCmFHrxCKGofUvjirM1eJeK9U/l9KaYcwRwcjfGhK5qkPrw5KJB6Z8Yt0WImHxHjOM3EOBRAD5GrpFYJSjxQEgpzRtYK/+eTw9GHec33eVt4Xjpe43SOiXoS38W6sP9MEQJTPNuYR/4c3LW0F9PpcnqrXtpvAdvcERFuBCogRtxXd5At9+AB8BYZj+sxDxZ21r7DixEMtnOIJGuvi4REwfdCXICTN+2BvLiE1sHvrkTa7x1u3KTYIHAJ6i67qnQGx8EkB+SW3mwteyaLcWTzgxvNofNGAJtUu/cNdy0d6uWbWO3yxns5/CY5Wq9xaFmCk5oICcihh5q2lAF88F69UGV5iuoQnriktot7yADppOe7Q+yUzZ/nVxQKGnSzvYK3BvTsBhANcY5BNexQrFTbrJyNm5rL/Ym/KrHnjzsKAXxbcTxrGiOEO18BhcNcXOQVwuuktdoRiQgxS/eV6PL2+beJumgyMZAPydTJcv4e8kqocUuQoZnXjLRz2FVAQjfQ9JGFu5rVhVjlv3VtFrsYlJH+Adm+KuRXGuG9olHHZqHTqO9Lk9DJAaoVIR4AZwWs+7j1gDqOlBWrgNnCMIj5ZrMpMlzCJxRhywhC/f1i1Wq2Cm0RhVz3hBo9vs3ClHA+AL/N6DOWzF0NrlDrv61Ay4ciCzM+28MFpmvPdY/9sA2jJX4cpJAW7H+L2iixX1+QlbkmKisebF1vKwVn75f0qOeTptq72qNDZ6dADFl/P7l3dyU2n/vBMDnAlSCwq1TPX55Twe54JMqk5irn5RtHf1Pq8MDvvFJIq3nA+Pn+IA17oh8m4QhYH43hXyAFX3W8Kb/tvvh664H1D8pAtvgHjLARlxlTPtPgyAo3kQBLqSa+KGxuacfz8MxgxY0tGiHPCDiZ+1gcIPUlMO44RE0ojldPosXoJ4g+HEWXHmxbq8niiHTOZ4PZOpD9bzOw7ofkzw37YxzYUuQYHOc/zt6n1NVddulRbfjDobuaBp/mt2Nzj0UKbyB6A+GObjGrKE74PAtjPMnZkv/HPWXUlmuG1KuMs8G1OOB4e2K6nV5/UxH8e9IbOfRwNVip6HcLn9cakB+xyi/prbrAOLVMm1IfNNQzFvFZ/ZxR8SImwWdLW+Luty4yNlOv9xrvi9oALPtuzJfI2iuqVGE45fORFLSCVnDLBke4vhD9u+RKPZighAgbrFXWNxroHyYEG4quaBD52zmz8aOgJjtnG0wR6VXul7QaVp9CLpI/yGAXNK4/N4eitrfCoytMHdAdjU9kwKzT1LkNTj210FsMv0At8Luin0HE/t0fNPPDyO4bU1R4vYwftMpie44n4Ame+czlhM0NAxsNJWHrG7Qfl1DfCXwP5aSoUZtWv1NedcdKetyddSVWbSv2uXSR2LjZKpM75/no6n49wO0zBTrsmv4LeOK7AnBFdJyqd1ImMz3D8LjiYezQW3gzkMo4BGCvbHiU/vBxz0AREgp1jyRT+5BC7XDeaQi4YaH2wSpc9pDOQw5RXk13HmdhC9NgCXyJExCrm3iY653MsRuZqjMfL3JQInYGzIXOGbTQzENZp5kWQMvLurE3C9y55xwHqYu1hthYcTbsEMh9HCWqQHUrWbEkkuKT8hOajBjIfbCsLnakxeL3YoiNHnUKT1RMvDiK2vYhBAwxZmD4gdGBYHTHyLY9NfGsB5+ZO3EEzK11ZY7IRXoeiROTjhwvf+HvIj9sNeFqQJ0pIkS2b3Bt/aEDFXX2z6Iug/3ArG1znEf2t0wOu+iRNWnqrPNB4fbOr2OfEc9y5BoP5GD2fsk8FdnSZXQ8YBwTA+2tdeHdmqWH9azs3aNJ7YojD1udxrqiTa+iOb1OIg4BI3qXXR+YtvqrbtauXXzFlRcQBmQeNv7dCKRgeLchjtiPP4VwM6nr6Q5F3nPP5L/jPPidX8sufxr4b+ePqIuc16RlTR3S+QgyNbr23CkTQ0GPkPnYORBghGGiAYaYBgpAGCkQYIRhogGGmAYKQBgpEGCEYaIBhpgGCkAYKRBghGGiAYaYBbLP4DvPGOZP6H50wAAAAASUVORK5CYII=";
+  </script>
+
+  <!-- APPLICATION ENGINE SCRIPT -->
+  <script>
+    /* ==========================================================
+       1. STATE MANAGEMENT
+       ========================================================== */
+    const PALETTES = {
+      gb_dmg: ['#9bbc0f', '#8bac0f', '#306230', '#0f380f'],
+      gb_pocket: ['#ffffff', '#aaaaaa', '#555555', '#000000'],
+      gb_light: ['#00e0d0', '#00b0a0', '#006050', '#002018'],
+      snes_16: [
+        '#000000', '#ffffff', '#b5b5b5', '#6b6b6b',
+        '#e70000', '#ff8b8b', '#00a300', '#73ff73',
+        '#0042e7', '#739cff', '#e79c00', '#ffe78b',
+        '#a300e7', '#e78bff', '#00a3a3', '#8bffff'
+      ],
+      gba_16: [
+        '#081820', '#346856', '#88c070', '#e0f8d0',
+        '#e03020', '#f87858', '#2060c0', '#68a0f8',
+        '#c08020', '#f8c050', '#208030', '#68d870',
+        '#8020a0', '#c068e8', '#ffffff', '#000000'
+      ]
+    };
+
+    const state = {
+      tileW: 8,
+      tileH: 8,
+      activePaletteKey: 'gb_dmg',
+      palette: [...PALETTES.gb_dmg],
+      currentColorIndex: 3,
+      activeTool: 'pencil',
+      activeTileIndex: 0xA1, // Default 'ก'
+      totalTiles: 256,
+      tiles: [],
+      tableMap: { ...EMBEDDED_THAI_TBL },
+      transparentColor0: false,
+      showGrid: true,
+      splitGuide: true,
+      centerCross: false,
+      undoStack: [],
+      redoStack: [],
+      tileClipboard: null,
+
+      // File System Access Handle (Layer 2)
+      diskFileHandle: null,
+      diskSaveType: null, // 'png' or 'json'
+
+      // Compositor State
+      comp: {
+        base: 0xA1,
+        vowel: 0xE1,
+        tone: 0xE8,
+        vowelDy: 0,
+        toneDy: 0
+      }
+    };
+
+    function createBlankTile(w = state.tileW, h = state.tileH) {
+      const tile = [];
+      for (let y = 0; y < h; y++) {
+        tile.push(new Array(w).fill(0));
+      }
+      return tile;
+    }
+
+    function initTiles(count = 256) {
+      state.tiles = [];
+      for (let i = 0; i < count; i++) {
+        state.tiles.push(createBlankTile());
+      }
+    }
+
+    /* Toast Helper */
+    function showToast(msg, duration = 2400) {
+      const toast = document.getElementById('appToast');
+      toast.innerText = msg;
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, duration);
+    }
+
+    /* ==========================================================
+       2. DUAL-LAYER IN-PROGRESS SAVING (LocalStorage + Disk Sync)
+       ========================================================== */
+    const LOCAL_STORAGE_KEY = 'pixel_font_studio_autosave';
+
+    function autoSaveToLocalStorage() {
+      try {
+        const saveState = {
+          tileW: state.tileW,
+          tileH: state.tileH,
+          paletteKey: state.activePaletteKey,
+          palette: state.palette,
+          activeTileIndex: state.activeTileIndex,
+          tiles: state.tiles,
+          tableMap: state.tableMap,
+          timestamp: Date.now()
+        };
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(saveState));
+      } catch (err) {
+        console.warn('LocalStorage save failed:', err);
+      }
+    }
+
+    function tryRestoreFromLocalStorage() {
+      try {
+        const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+        if (saved) {
+          const data = JSON.parse(saved);
+          if (data && data.tiles && data.tiles.length > 0) {
+            state.tileW = data.tileW || 8;
+            state.tileH = data.tileH || 8;
+            state.paletteKey = data.paletteKey || 'gb_dmg';
+            state.palette = data.palette || [...PALETTES.gb_dmg];
+            state.activeTileIndex = data.activeTileIndex || 0xA1;
+            state.tiles = data.tiles;
+            if (data.tableMap) state.tableMap = data.tableMap;
+
+            showToast('✓ โหลดงานที่ทำค้างไว้ล่าสุดแล้ว');
+            return true;
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to restore from LocalStorage:', err);
+      }
+      return false;
+    }
+
+    /* Layer 2: Direct Disk Save via File System Access API */
+    async function triggerQuickSave() {
+      autoSaveToLocalStorage();
+
+      // If File System Access API is supported and we don't have a handle yet
+      if ('showSaveFilePicker' in window) {
+        if (!state.diskFileHandle) {
+          document.getElementById('modalDiskSaveSetup').classList.add('open');
+          return;
+        }
+        await writeToDiskHandle();
+      } else {
+        // Fallback: download Project JSON
+        downloadProjectJSON();
+        showToast('✓ ดาวน์โหลดไฟล์ Project เรียบร้อย!');
+      }
+    }
+
+    async function writeToDiskHandle() {
+      if (!state.diskFileHandle) return;
+      try {
+        const writable = await state.diskFileHandle.createWritable();
+        if (state.diskSaveType === 'png') {
+          const blob = await generateSheetPNGBlob();
+          await writable.write(blob);
+        } else {
+          const projectJson = generateProjectJSONString();
+          await writable.write(projectJson);
+        }
+        await writable.close();
+        showToast(`✓ บันทึกลงไฟล์ ${state.diskFileHandle.name} บนดิสก์เรียบร้อย!`);
+      } catch (err) {
+        console.error('Disk write error:', err);
+        showToast('⚠️ ไม่สามารถเขียนลงไฟล์ได้: ' + err.message);
+      }
+    }
+
+    /* ==========================================================
+       3. CHARACTER-DRIVEN LIST (SIDEBAR NAVIGATION)
+       ========================================================== */
+    const charListContainer = document.getElementById('charListContainer');
+    const txtSearchChar = document.getElementById('txtSearchChar');
+
+    const CHAR_GROUPS = [
+      {
+        name: 'พยัญชนะไทย (ก - ฮ)',
+        start: 0xA1, end: 0xCC,
+        badgeText: 'พยัญชนะไทย (วาด 6 แถวล่าง)',
+        badgeClass: 'badge-consonant'
+      },
+      {
+        name: 'สระเดี่ยว / สระหน้า (เ, แ, โ, ใ, ไ, ะ, า, ำ)',
+        tiles: [0xDA, 0xDB, 0xDC, 0xDD, 0xDE, 0xDF, 0xEC, 0xED],
+        badgeText: 'สระหน้า/สระเดี่ยว',
+        badgeClass: 'badge-other'
+      },
+      {
+        name: 'สระบน & วรรณยุกต์ (ั, ิ, ี, ึ, ื, ่, ้, ๊, ๋, ์)',
+        tiles: [0xE0, 0xE1, 0xE2, 0xE3, 0xE4, 0xE7, 0xE8, 0xE9, 0xEA, 0xEB],
+        badgeText: 'สระบน/วรรณยุกต์ (วาด 2 แถวบน)',
+        badgeClass: 'badge-vowel'
+      },
+      {
+        name: 'สระล่าง (ุ, ู)',
+        tiles: [0xE5, 0xE6],
+        badgeText: 'สระล่าง (วาดแถวล่าง)',
+        badgeClass: 'badge-vowel'
+      },
+      {
+        name: 'เครื่องหมาย & สัญลักษณ์ (!, ?, ., ,, ▼)',
+        tiles: [0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C],
+        badgeText: 'เครื่องหมายวรรคตอน',
+        badgeClass: 'badge-other'
+      },
+      {
+        name: 'อักษรภาษาอังกฤษ (A-Z, a-z)',
+        range1: [0x50, 0x69], range2: [0x6E, 0x87],
+        badgeText: 'อักษรภาษาอังกฤษ',
+        badgeClass: 'badge-other'
+      }
+    ];
+
+    function renderCharacterList() {
+      charListContainer.innerHTML = '';
+      const filter = txtSearchChar.value.trim().toUpperCase();
+
+      CHAR_GROUPS.forEach(group => {
+        let tileIndices = [];
+        if (group.tiles) {
+          tileIndices = group.tiles;
+        } else if (group.start !== undefined && group.end !== undefined) {
+          for (let i = group.start; i <= group.end; i++) tileIndices.push(i);
+        } else if (group.range1 && group.range2) {
+          for (let i = group.range1[0]; i <= group.range1[1]; i++) tileIndices.push(i);
+          for (let i = group.range2[0]; i <= group.range2[1]; i++) tileIndices.push(i);
+        }
+
+        // Filter tiles
+        const matched = tileIndices.filter(idx => {
+          const hex = idx.toString(16).toUpperCase().padStart(2, '0');
+          const char = state.tableMap[hex] || '';
+          if (!filter) return true;
+          return hex.includes(filter) || char.toUpperCase().includes(filter);
+        });
+
+        if (matched.length === 0) return;
+
+        // Group Header
+        const grpHeader = document.createElement('div');
+        grpHeader.className = 'char-group-title';
+        grpHeader.innerHTML = `<span>${group.name}</span> <span>(${matched.length})</span>`;
+        charListContainer.appendChild(grpHeader);
+
+        // Chip Grid
+        const grid = document.createElement('div');
+        grid.className = 'char-chip-grid';
+
+        matched.forEach(idx => {
+          const hex = idx.toString(16).toUpperCase().padStart(2, '0');
+          const char = state.tableMap[hex] || '·';
+
+          const chip = document.createElement('div');
+          chip.className = `char-chip ${idx === state.activeTileIndex ? 'active' : ''}`;
+          chip.id = `char-chip-${idx}`;
+
+          chip.innerHTML = `
+            <span class="char-chip-main">${char}</span>
+            <span class="char-chip-hex">${hex}</span>
+          `;
+
+          chip.addEventListener('click', () => {
+            setActiveTile(idx);
+            if (window.innerWidth <= 850) {
+              closeCharDrawer();
+            }
+          });
+
+          grid.appendChild(chip);
+        });
+
+        charListContainer.appendChild(grid);
+      });
+
+      populateCompositorDropdowns();
+    }
+
+    txtSearchChar.addEventListener('input', renderCharacterList);
+    document.getElementById('btnResetSearch').addEventListener('click', () => {
+      txtSearchChar.value = '';
+      renderCharacterList();
+    });
+
+    const panelCharList = document.getElementById('panelCharList');
+    const charDrawerBackdrop = document.getElementById('charDrawerBackdrop');
+    const btnOpenCharPicker = document.getElementById('btnOpenCharPicker');
+    const btnCloseCharDrawer = document.getElementById('btnCloseCharDrawer');
+    const btnPrevChar = document.getElementById('btnPrevChar');
+    const btnNextChar = document.getElementById('btnNextChar');
+
+    function openCharDrawer() {
+      panelCharList.classList.add('drawer-open');
+      charDrawerBackdrop.classList.add('active');
+      setTimeout(() => txtSearchChar.focus(), 120);
+    }
+
+    function closeCharDrawer() {
+      panelCharList.classList.remove('drawer-open');
+      charDrawerBackdrop.classList.remove('active');
+    }
+
+    btnOpenCharPicker.addEventListener('click', () => {
+      if (window.innerWidth <= 850) {
+        openCharDrawer();
+      } else {
+        txtSearchChar.focus();
+        const activeChip = document.getElementById(`char-chip-${state.activeTileIndex}`);
+        if (activeChip) activeChip.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    });
+
+    btnCloseCharDrawer.addEventListener('click', closeCharDrawer);
+    charDrawerBackdrop.addEventListener('click', closeCharDrawer);
+
+    btnPrevChar.addEventListener('click', () => {
+      let prevIdx = state.activeTileIndex - 1;
+      if (prevIdx < 0) prevIdx = state.tiles.length - 1;
+      setActiveTile(prevIdx);
+    });
+
+    btnNextChar.addEventListener('click', () => {
+      let nextIdx = state.activeTileIndex + 1;
+      if (nextIdx >= state.tiles.length) nextIdx = 0;
+      setActiveTile(nextIdx);
+    });
+
+    function setActiveTile(idx) {
+      if (idx < 0 || idx >= state.tiles.length) return;
+      document.querySelectorAll('.char-chip').forEach(c => c.classList.remove('active'));
+      const activeChip = document.getElementById(`char-chip-${idx}`);
+      if (activeChip) {
+        activeChip.classList.add('active');
+        activeChip.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+
+      state.activeTileIndex = idx;
+      updateActiveTileInfo();
+      renderActiveTile();
+    }
+
+    function updateActiveTileInfo() {
+      const idx = state.activeTileIndex;
+      const hex = '0x' + idx.toString(16).toUpperCase().padStart(2, '0');
+      const hexKey = idx.toString(16).toUpperCase().padStart(2, '0');
+      const char = state.tableMap[hexKey] || '';
+
+      document.getElementById('lblActiveTileHex').innerText = hex;
+      document.getElementById('lblActiveTileDec').innerText = `(${idx})`;
+      document.getElementById('lblActiveTileSize').innerText = `${state.tileW}x${state.tileH}`;
+      document.getElementById('lblActiveCharDisplay').innerText = char || '·';
+      document.getElementById('lblSelectedCharSummary').innerText = `${char} (${hex})`;
+
+      // Badge Guide
+      const badge = document.getElementById('badgeTileGuide');
+      if (idx >= 0xA1 && idx <= 0xCC) {
+        badge.innerText = `พยัญชนะไทย: ${char} (วาด 6 แถวล่าง)`;
+        badge.className = 'tile-badge badge-consonant';
+      } else if (idx >= 0xE0 && idx <= 0xEB) {
+        badge.innerText = `สระบน/วรรณยุกต์: ${char} (วาด 2 แถวบน)`;
+        badge.className = 'tile-badge badge-vowel';
+      } else if ((idx >= 0xDA && idx <= 0xDF) || idx === 0xEC || idx === 0xED) {
+        badge.innerText = `สระเดี่ยว/สระหน้า: ${char}`;
+        badge.className = 'tile-badge badge-other';
+      } else {
+        badge.innerText = char ? `อักขระ: ${char}` : 'สล็อตทั่วไป';
+        badge.className = 'tile-badge badge-other';
+      }
+    }
+
+    /* ==========================================================
+       4. PIXEL CANVAS WORKSPACE
+       ========================================================== */
+    const pixelCanvas = document.getElementById('pixelCanvas');
+    const pctx = pixelCanvas.getContext('2d');
+    let isDrawing = false;
+    let drawModeColor = 3;
+
+    function renderActiveTile() {
+      const w = state.tileW;
+      const h = state.tileH;
+      const cw = pixelCanvas.width;
+      const ch = pixelCanvas.height;
+      const cellW = cw / w;
+      const cellH = ch / h;
+
+      pctx.clearRect(0, 0, cw, ch);
+
+      const tile = state.tiles[state.activeTileIndex];
+      if (!tile) return;
+
+      // Draw Pixels
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const colorIdx = tile[y][x];
+          pctx.fillStyle = state.palette[colorIdx] || '#000000';
+          pctx.fillRect(x * cellW, y * cellH, cellW, cellH);
+        }
+      }
+
+      // Grid Lines
+      if (state.showGrid) {
+        pctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+        pctx.lineWidth = 1;
+        pctx.beginPath();
+        for (let x = 0; x <= w; x++) {
+          pctx.moveTo(x * cellW, 0); pctx.lineTo(x * cellW, ch);
+        }
+        for (let y = 0; y <= h; y++) {
+          pctx.moveTo(0, y * cellH); pctx.lineTo(cw, y * cellH);
+        }
+        pctx.stroke();
+      }
+
+      // Center Crosshair
+      if (state.centerCross) {
+        pctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+        pctx.lineWidth = 1.5;
+        pctx.beginPath();
+        pctx.moveTo(cw / 2, 0); pctx.lineTo(cw / 2, ch);
+        pctx.moveTo(0, ch / 2); pctx.lineTo(cw, ch / 2);
+        pctx.stroke();
+      }
+
+      // Thai 8x8 Split Proportion Guide (2px Top / 6px Bottom)
+      if (state.splitGuide && h === 8) {
+        const splitY = 2 * cellH;
+        pctx.strokeStyle = '#f59e0b';
+        pctx.lineWidth = 2;
+        pctx.setLineDash([4, 4]);
+        pctx.beginPath();
+        pctx.moveTo(0, splitY);
+        pctx.lineTo(cw, splitY);
+        pctx.stroke();
+        pctx.setLineDash([]);
+      }
+
+      renderPreviews();
+      updateCompositor();
+    }
+
+    function getCanvasPixelCoords(e) {
+      const clientX = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : e.clientX;
+      const clientY = (e.touches && e.touches.length > 0) ? e.touches[0].clientY : e.clientY;
+      const rect = pixelCanvas.getBoundingClientRect();
+      const scaleX = pixelCanvas.width / rect.width;
+      const scaleY = pixelCanvas.height / rect.height;
+      const canvasX = (clientX - rect.left) * scaleX;
+      const canvasY = (clientY - rect.top) * scaleY;
+      const cellW = pixelCanvas.width / state.tileW;
+      const cellH = pixelCanvas.height / state.tileH;
+      const px = Math.floor(canvasX / cellW);
+      const py = Math.floor(canvasY / cellH);
+      return {
+        x: Math.max(0, Math.min(state.tileW - 1, px)),
+        y: Math.max(0, Math.min(state.tileH - 1, py))
+      };
+    }
+
+    function recordHistory() {
+      const copy = state.tiles[state.activeTileIndex].map(row => [...row]);
+      state.undoStack.push({ tileIndex: state.activeTileIndex, data: copy });
+      if (state.undoStack.length > 50) state.undoStack.shift();
+      state.redoStack = [];
+    }
+
+    function applyDraw(px, py, colorIdx) {
+      const tile = state.tiles[state.activeTileIndex];
+      if (state.activeTool === 'pencil') {
+        if (tile[py][px] !== colorIdx) {
+          tile[py][px] = colorIdx;
+          renderActiveTile();
+          autoSaveToLocalStorage();
+        }
+      } else if (state.activeTool === 'eraser') {
+        if (tile[py][px] !== 0) {
+          tile[py][px] = 0;
+          renderActiveTile();
+          autoSaveToLocalStorage();
+        }
+      } else if (state.activeTool === 'picker') {
+        state.currentColorIndex = tile[py][px];
+        updatePaletteUI();
+      } else if (state.activeTool === 'fill') {
+        floodFill(px, py, colorIdx);
+        renderActiveTile();
+        autoSaveToLocalStorage();
+      }
+    }
+
+    function floodFill(startX, startY, newColor) {
+      const tile = state.tiles[state.activeTileIndex];
+      const targetColor = tile[startY][startX];
+      if (targetColor === newColor) return;
+
+      const queue = [[startX, startY]];
+      const visited = new Set();
+
+      while (queue.length > 0) {
+        const [x, y] = queue.pop();
+        const key = `${x},${y}`;
+        if (visited.has(key)) continue;
+        visited.add(key);
+
+        if (x < 0 || x >= state.tileW || y < 0 || y >= state.tileH) continue;
+        if (tile[y][x] !== targetColor) continue;
+
+        tile[y][x] = newColor;
+        queue.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+      }
+    }
+
+    pixelCanvas.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      recordHistory();
+      isDrawing = true;
+      drawModeColor = (e.button === 2 || state.activeTool === 'eraser') ? 0 : state.currentColorIndex;
+      const { x, y } = getCanvasPixelCoords(e);
+      applyDraw(x, y, drawModeColor);
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDrawing) return;
+      const { x, y } = getCanvasPixelCoords(e);
+      applyDraw(x, y, drawModeColor);
+    });
+
+    window.addEventListener('mouseup', () => { isDrawing = false; });
+    pixelCanvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    // Touch Support for Mobile / Tablets
+    pixelCanvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      recordHistory();
+      isDrawing = true;
+      drawModeColor = (state.activeTool === 'eraser') ? 0 : state.currentColorIndex;
+      const { x, y } = getCanvasPixelCoords(e);
+      applyDraw(x, y, drawModeColor);
+    }, { passive: false });
+
+    window.addEventListener('touchmove', (e) => {
+      if (!isDrawing) return;
+      if (e.target === pixelCanvas || (e.touches && e.touches.length > 0)) {
+        e.preventDefault();
+      }
+      const { x, y } = getCanvasPixelCoords(e);
+      applyDraw(x, y, drawModeColor);
+    }, { passive: false });
+
+    window.addEventListener('touchend', () => { isDrawing = false; });
+    window.addEventListener('touchcancel', () => { isDrawing = false; });
+
+    /* Previews */
+    const prev1x = document.getElementById('prev1x');
+    const prev2x = document.getElementById('prev2x');
+    const prev4x = document.getElementById('prev4x');
+    const prev8x = document.getElementById('prev8x');
+
+    function updatePreviewSizes() {
+      const w = state.tileW;
+      const h = state.tileH;
+      prev1x.width = w; prev1x.height = h;
+      prev2x.width = w * 2; prev2x.height = h * 2;
+      prev4x.width = w * 4; prev4x.height = h * 4;
+      prev8x.width = w * 8; prev8x.height = h * 8;
+    }
+
+    function renderPreviews() {
+      const tile = state.tiles[state.activeTileIndex];
+      if (!tile) return;
+
+      const scales = [
+        { canvas: prev1x, s: 1 },
+        { canvas: prev2x, s: 2 },
+        { canvas: prev4x, s: 4 },
+        { canvas: prev8x, s: 8 }
+      ];
+
+      scales.forEach(({ canvas, s }) => {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let y = 0; y < state.tileH; y++) {
+          for (let x = 0; x < state.tileW; x++) {
+            const cIdx = tile[y][x];
+            if (state.transparentColor0 && cIdx === 0) continue;
+            ctx.fillStyle = state.palette[cIdx] || '#000000';
+            ctx.fillRect(x * s, y * s, s, s);
+          }
+        }
+      });
+    }
+
+    /* Palette UI */
+    const paletteSwatchesContainer = document.getElementById('paletteSwatches');
+
+    function updatePaletteUI() {
+      paletteSwatchesContainer.innerHTML = '';
+      state.palette.forEach((color, idx) => {
+        const swatch = document.createElement('div');
+        swatch.className = `swatch ${idx === state.currentColorIndex ? 'active' : ''}`;
+        swatch.style.backgroundColor = color;
+        swatch.innerText = idx;
+
+        const colorInput = document.createElement('input');
+        colorInput.type = 'color';
+        colorInput.value = color.length === 4 ? expandHex(color) : color;
+        colorInput.addEventListener('change', (e) => {
+          state.palette[idx] = e.target.value;
+          updatePaletteUI();
+          renderActiveTile();
+          autoSaveToLocalStorage();
+        });
+
+        swatch.addEventListener('click', () => {
+          state.currentColorIndex = idx;
+          updatePaletteUI();
+        });
+
+        swatch.appendChild(colorInput);
+        paletteSwatchesContainer.appendChild(swatch);
+      });
+    }
+
+    function expandHex(hex) {
+      if (hex.length === 4) {
+        return '#' + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
+      }
+      return hex;
+    }
+
+    /* Transforms */
+    function shiftTile(dx, dy) {
+      recordHistory();
+      const tile = state.tiles[state.activeTileIndex];
+      const w = state.tileW;
+      const h = state.tileH;
+      const newTile = createBlankTile(w, h);
+
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const nx = (x + dx + w) % w;
+          const ny = (y + dy + h) % h;
+          newTile[ny][nx] = tile[y][x];
+        }
+      }
+      state.tiles[state.activeTileIndex] = newTile;
+      renderActiveTile();
+      autoSaveToLocalStorage();
+    }
+
+    function flipH() {
+      recordHistory();
+      const tile = state.tiles[state.activeTileIndex];
+      state.tiles[state.activeTileIndex] = tile.map(row => [...row].reverse());
+      renderActiveTile();
+      autoSaveToLocalStorage();
+    }
+
+    function flipV() {
+      recordHistory();
+      const tile = state.tiles[state.activeTileIndex];
+      state.tiles[state.activeTileIndex] = [...tile].reverse();
+      renderActiveTile();
+      autoSaveToLocalStorage();
+    }
+
+    function rotateTile() {
+      recordHistory();
+      const tile = state.tiles[state.activeTileIndex];
+      const w = state.tileW;
+      const h = state.tileH;
+      const newTile = createBlankTile(w, h);
+
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          if (w === h) newTile[x][h - 1 - y] = tile[y][x];
+          else newTile[y][x] = tile[y][x];
+        }
+      }
+      state.tiles[state.activeTileIndex] = newTile;
+      renderActiveTile();
+      autoSaveToLocalStorage();
+    }
+
+    function invertColors() {
+      recordHistory();
+      const tile = state.tiles[state.activeTileIndex];
+      const maxCol = state.palette.length - 1;
+      for (let y = 0; y < state.tileH; y++) {
+        for (let x = 0; x < state.tileW; x++) {
+          tile[y][x] = maxCol - tile[y][x];
+        }
+      }
+      renderActiveTile();
+      autoSaveToLocalStorage();
+    }
+
+    function clearTile() {
+      recordHistory();
+      state.tiles[state.activeTileIndex] = createBlankTile();
+      renderActiveTile();
+      autoSaveToLocalStorage();
+    }
+
+    function undo() {
+      if (state.undoStack.length === 0) return;
+      const curr = { tileIndex: state.activeTileIndex, data: state.tiles[state.activeTileIndex].map(r => [...r]) };
+      state.redoStack.push(curr);
+      const prev = state.undoStack.pop();
+      state.activeTileIndex = prev.tileIndex;
+      state.tiles[prev.tileIndex] = prev.data;
+      updateActiveTileInfo();
+      renderActiveTile();
+      autoSaveToLocalStorage();
+    }
+
+    function redo() {
+      if (state.redoStack.length === 0) return;
+      const curr = { tileIndex: state.activeTileIndex, data: state.tiles[state.activeTileIndex].map(r => [...r]) };
+      state.undoStack.push(curr);
+      const next = state.redoStack.pop();
+      state.activeTileIndex = next.tileIndex;
+      state.tiles[next.tileIndex] = next.data;
+      updateActiveTileInfo();
+      renderActiveTile();
+      autoSaveToLocalStorage();
+    }
+
+    /* ==========================================================
+       5. VIEW 2: DEDICATED TESTING & COMPOSITOR
+       ========================================================== */
+    const compBaseTile = document.getElementById('compBaseTile');
+    const compVowelTile = document.getElementById('compVowelTile');
+    const compToneTile = document.getElementById('compToneTile');
+    const compCanvas1x = document.getElementById('compCanvas1x');
+    const compCanvas4x = document.getElementById('compCanvas4x');
+    const compCanvas8x = document.getElementById('compCanvas8x');
+
+    function populateCompositorDropdowns() {
+      const selects = [
+        { el: compBaseTile, defaultVal: 0xA1, allowNone: false },
+        { el: compVowelTile, defaultVal: 0xE1, allowNone: true },
+        { el: compToneTile, defaultVal: 0xE8, allowNone: true }
+      ];
+
+      selects.forEach(({ el, defaultVal, allowNone }) => {
+        const curVal = el.value !== '' ? parseInt(el.value) : defaultVal;
+        el.innerHTML = '';
+        if (allowNone) {
+          const optNone = document.createElement('option');
+          optNone.value = '-1';
+          optNone.innerText = '-- None --';
+          el.appendChild(optNone);
+        }
+        for (let i = 0; i < state.tiles.length; i++) {
+          const opt = document.createElement('option');
+          opt.value = i;
+          const hex = i.toString(16).toUpperCase().padStart(2, '0');
+          const char = state.tableMap[hex] ? ` [${state.tableMap[hex]}]` : '';
+          opt.innerText = `0x${hex}${char}`;
+          el.appendChild(opt);
+        }
+        el.value = curVal;
+      });
+    }
+
+    function getCompositePixels() {
+      const w = state.tileW;
+      const h = state.tileH;
+      const comp = createBlankTile(w, h);
+
+      const layers = [
+        { idx: parseInt(compBaseTile.value), dy: 0 },
+        { idx: parseInt(compVowelTile.value), dy: state.comp.vowelDy },
+        { idx: parseInt(compToneTile.value), dy: state.comp.toneDy }
+      ];
+
+      layers.forEach(({ idx, dy }) => {
+        if (idx >= 0 && idx < state.tiles.length) {
+          const tile = state.tiles[idx];
+          for (let y = 0; y < h; y++) {
+            const ny = y + dy;
+            if (ny < 0 || ny >= h) continue;
+            for (let x = 0; x < w; x++) {
+              const c = tile[y][x];
+              if (c > 0) comp[ny][x] = c;
+            }
+          }
+        }
+      });
+
+      return comp;
+    }
+
+    function updateCompositor() {
+      const comp = getCompositePixels();
+      const w = state.tileW;
+      const h = state.tileH;
+
+      compCanvas1x.width = w; compCanvas1x.height = h;
+      compCanvas4x.width = w * 4; compCanvas4x.height = h * 4;
+      compCanvas8x.width = w * 8; compCanvas8x.height = h * 8;
+
+      const scales = [
+        { c: compCanvas1x, s: 1 },
+        { c: compCanvas4x, s: 4 },
+        { c: compCanvas8x, s: 8 }
+      ];
+
+      scales.forEach(({ c, s }) => {
+        const ctx = c.getContext('2d');
+        ctx.clearRect(0, 0, c.width, c.height);
+        for (let y = 0; y < h; y++) {
+          for (let x = 0; x < w; x++) {
+            const cIdx = comp[y][x];
+            ctx.fillStyle = state.palette[cIdx] || '#000';
+            ctx.fillRect(x * s, y * s, s, s);
+          }
+        }
+      });
+
+      renderDialogue();
+    }
+
+    /* Dialogue Simulator */
+    const dialogueCanvas = document.getElementById('dialogueCanvas');
+    const txtDialogueInput = document.getElementById('txtDialogueInput');
+    const dialogueBgSelect = document.getElementById('dialogueBgSelect');
+    const dialogueBox = document.getElementById('dialogueBox');
+
+    const THAI_VOWELS = new Set(['ิ', 'ี', 'ึ', 'ื', 'ั', '่', '้', '๊', '๋', '็', '์', 'ุ', 'ู']);
+
+    function getTileByChar(char) {
+      for (const [hex, ch] of Object.entries(state.tableMap)) {
+        if (ch === char) return parseInt(hex, 16);
+      }
+      return -1;
+    }
+
+    function renderDialogue() {
+      const text = txtDialogueInput.value;
+      const ctx = dialogueCanvas.getContext('2d');
+      const scale = 2;
+      const w = state.tileW * scale;
+      const h = state.tileH * scale;
+
+      dialogueCanvas.width = Math.max(500, (text.length + 4) * w);
+      dialogueCanvas.height = h + 24;
+      ctx.clearRect(0, 0, dialogueCanvas.width, dialogueCanvas.height);
+
+      let cursorX = 10;
+      let lastTileX = 10;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        if (char === ' ') {
+          cursorX += w / 2;
+          continue;
+        }
+
+        const tileIdx = getTileByChar(char);
+        const isVowel = THAI_VOWELS.has(char);
+        const drawX = isVowel ? lastTileX : cursorX;
+
+        if (tileIdx >= 0 && tileIdx < state.tiles.length) {
+          const tile = state.tiles[tileIdx];
+          for (let y = 0; y < state.tileH; y++) {
+            for (let x = 0; x < state.tileW; x++) {
+              const cIdx = tile[y][x];
+              if (cIdx > 0) {
+                ctx.fillStyle = state.palette[cIdx] || '#ffffff';
+                ctx.fillRect(drawX + x * scale, 6 + y * scale, scale, scale);
+              }
+            }
+          }
+        }
+
+        if (!isVowel) {
+          lastTileX = cursorX;
+          cursorX += w + 2;
+        }
+      }
+    }
+
+    txtDialogueInput.addEventListener('input', renderDialogue);
+    document.getElementById('btnClearDialogue').onclick = () => {
+      txtDialogueInput.value = '';
+      renderDialogue();
+    };
+    dialogueBgSelect.addEventListener('change', () => {
+      dialogueBox.className = `dialogue-preview-large ${dialogueBgSelect.value === 'lcd' ? 'gb-lcd' : ''}`;
+      renderDialogue();
+    });
+
+    document.querySelectorAll('.btnQuickWord').forEach(btn => {
+      btn.addEventListener('click', () => {
+        txtDialogueInput.value = btn.dataset.word;
+        renderDialogue();
+      });
+    });
+
+    /* ==========================================================
+       6. EXPORT & FILE GENERATION
+       ========================================================== */
+    function generateSheetPNGBlob(cols = 16) {
+      return new Promise((resolve) => {
+        const rows = Math.ceil(state.tiles.length / cols);
+        const canvas = document.createElement('canvas');
+        canvas.width = cols * state.tileW;
+        canvas.height = rows * state.tileH;
+        const ctx = canvas.getContext('2d');
+
+        state.tiles.forEach((tile, idx) => {
+          const tx = (idx % cols) * state.tileW;
+          const ty = Math.floor(idx / cols) * state.tileH;
+
+          for (let y = 0; y < state.tileH; y++) {
+            for (let x = 0; x < state.tileW; x++) {
+              const cIdx = tile[y][x];
+              if (state.transparentColor0 && cIdx === 0) continue;
+              ctx.fillStyle = state.palette[cIdx] || '#000';
+              ctx.fillRect(tx + x, ty + y, 1, 1);
+            }
+          }
+        });
+
+        canvas.toBlob(blob => resolve(blob), 'image/png');
+      });
+    }
+
+    function generateTBLFileString() {
+      const sortedKeys = Object.keys(state.tableMap).sort((a,b) => parseInt(a, 16) - parseInt(b, 16));
+      let content = '';
+      sortedKeys.forEach(hex => {
+        content += `${hex}=${state.tableMap[hex]}\n`;
+      });
+      content += 'FE= \nFF=[END]\n';
+      return content;
+    }
+
+    function generateProjectJSONString() {
+      const proj = {
+        tileW: state.tileW,
+        tileH: state.tileH,
+        paletteKey: state.activePaletteKey,
+        palette: state.palette,
+        tiles: state.tiles,
+        tableMap: state.tableMap,
+        version: '1.0'
+      };
+      return JSON.stringify(proj, null, 2);
+    }
+
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function downloadProjectJSON() {
+      const jsonStr = generateProjectJSONString();
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      downloadBlob(blob, 'font_project.json');
+    }
+
+    function downloadTBLFile() {
+      const tblStr = generateTBLFileString();
+      const blob = new Blob([tblStr], { type: 'text/plain;charset=utf-8' });
+      downloadBlob(blob, 'frog_thai.tbl');
+    }
+
+    function downloadGBBinary() {
+      const buffer = new Uint8Array(state.tiles.length * 16);
+      state.tiles.forEach((tile, tIdx) => {
+        for (let y = 0; y < 8; y++) {
+          let lowByte = 0;
+          let highByte = 0;
+          for (let x = 0; x < 8; x++) {
+            const c = (tile[y] && tile[y][x] !== undefined) ? (tile[y][x] & 3) : 0;
+            const bit = 7 - x;
+            if (c & 1) lowByte |= (1 << bit);
+            if (c & 2) highByte |= (1 << bit);
+          }
+          buffer[tIdx * 16 + y * 2] = lowByte;
+          buffer[tIdx * 16 + y * 2 + 1] = highByte;
+        }
+      });
+      const blob = new Blob([buffer], { type: 'application/octet-stream' });
+      downloadBlob(blob, 'font_gb_2bpp.bin');
+    }
+
+    /* Load PNG Data URL */
+    function loadPNGFromDataURL(dataUrl, callback) {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+
+        const imgData = ctx.getImageData(0, 0, img.width, img.height).data;
+        const cols = Math.floor(img.width / state.tileW);
+        const rows = Math.floor(img.height / state.tileH);
+        const count = cols * rows;
+
+        if (count === 0) {
+          alert('Image dimensions are smaller than active tile size!');
+          return;
+        }
+
+        state.tiles = [];
+        for (let i = 0; i < count; i++) {
+          const tile = createBlankTile();
+          const tx = (i % cols) * state.tileW;
+          const ty = Math.floor(i / cols) * state.tileH;
+
+          for (let y = 0; y < state.tileH; y++) {
+            for (let x = 0; x < state.tileW; x++) {
+              const pixelIndex = ((ty + y) * img.width + (tx + x)) * 4;
+              const r = imgData[pixelIndex];
+              const g = imgData[pixelIndex + 1];
+              const b = imgData[pixelIndex + 2];
+              const a = imgData[pixelIndex + 3];
+
+              if (a < 128) {
+                tile[y][x] = 0;
+              } else {
+                tile[y][x] = findClosestPaletteIndex(r, g, b);
+              }
+            }
+          }
+          state.tiles.push(tile);
+        }
+
+        state.activeTileIndex = 0xA1;
+        renderCharacterList();
+        renderActiveTile();
+        autoSaveToLocalStorage();
+        if (callback) callback();
+      };
+      img.src = dataUrl;
+    }
+
+    function findClosestPaletteIndex(r, g, b) {
+      let closestIdx = 0;
+      let minDistance = Infinity;
+
+      state.palette.forEach((hex, idx) => {
+        const rgb = hexToRgb(hex);
+        if (!rgb) return;
+        const d = (r - rgb.r) ** 2 + (g - rgb.g) ** 2 + (b - rgb.b) ** 2;
+        if (d < minDistance) {
+          minDistance = d;
+          closestIdx = idx;
+        }
+      });
+
+      return closestIdx;
+    }
+
+    function hexToRgb(hex) {
+      hex = expandHex(hex).replace('#', '');
+      const num = parseInt(hex, 16);
+      return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+    }
+
+    /* ==========================================================
+       7. EVENT LISTENERS & WIRING
+       ========================================================== */
+    // Tab Switching
+    document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+        btn.classList.add('active');
+        const view = document.getElementById(btn.dataset.view);
+        if (view) view.classList.add('active');
+        if (btn.dataset.view === 'viewTesting') renderDialogue();
+      });
+    });
+
+    // Tools
+    document.querySelectorAll('.tool-btn[data-tool]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tool-btn[data-tool]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.activeTool = btn.dataset.tool;
+      });
+    });
+
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+
+      if (e.ctrlKey || e.metaKey) {
+        if (e.key === 's') {
+          e.preventDefault();
+          triggerQuickSave();
+        } else if (e.key === 'z') {
+          e.preventDefault(); undo();
+        } else if (e.key === 'y') {
+          e.preventDefault(); redo();
+        } else if (e.key === 'c') {
+          e.preventDefault();
+          state.tileClipboard = state.tiles[state.activeTileIndex].map(r => [...r]);
+          showToast('📋 Copied tile to clipboard');
+        } else if (e.key === 'v') {
+          e.preventDefault();
+          if (state.tileClipboard) {
+            recordHistory();
+            state.tiles[state.activeTileIndex] = state.tileClipboard.map(r => [...r]);
+            renderActiveTile();
+            autoSaveToLocalStorage();
+            showToast('📄 Pasted tile');
+          }
+        }
+      } else {
+        if (e.key === 'Escape') {
+          closeCharDrawer();
+        } else if (e.key === '[' || (e.altKey && e.key === 'ArrowLeft')) {
+          e.preventDefault();
+          btnPrevChar.click();
+        } else if (e.key === ']' || (e.altKey && e.key === 'ArrowRight')) {
+          e.preventDefault();
+          btnNextChar.click();
+        } else if (e.key === 'p' || e.key === 'P') document.getElementById('toolPencil').click();
+        else if (e.key === 'e' || e.key === 'E') document.getElementById('toolEraser').click();
+        else if (e.key === 'b' || e.key === 'B') document.getElementById('toolFill').click();
+        else if (e.key === 'i' || e.key === 'I') document.getElementById('toolPicker').click();
+        else if (e.key === 'ArrowUp') shiftTile(0, -1);
+        else if (e.key === 'ArrowDown') shiftTile(0, 1);
+        else if (e.key === 'ArrowLeft') shiftTile(-1, 0);
+        else if (e.key === 'ArrowRight') shiftTile(1, 0);
+        else if (e.key === 'Delete') clearTile();
+      }
+    });
+
+    // Transform Buttons
+    document.getElementById('btnShiftUp').onclick = () => shiftTile(0, -1);
+    document.getElementById('btnShiftDown').onclick = () => shiftTile(0, 1);
+    document.getElementById('btnShiftLeft').onclick = () => shiftTile(-1, 0);
+    document.getElementById('btnShiftRight').onclick = () => shiftTile(1, 0);
+    document.getElementById('btnFlipH').onclick = flipH;
+    document.getElementById('btnFlipV').onclick = flipV;
+    document.getElementById('btnRotate').onclick = rotateTile;
+    document.getElementById('btnInvert').onclick = invertColors;
+    document.getElementById('btnClearTile').onclick = clearTile;
+
+    document.getElementById('btnCopyTile').onclick = () => {
+      state.tileClipboard = state.tiles[state.activeTileIndex].map(r => [...r]);
+      showToast('📋 Copied tile');
+    };
+    document.getElementById('btnPasteTile').onclick = () => {
+      if (state.tileClipboard) {
+        recordHistory();
+        state.tiles[state.activeTileIndex] = state.tileClipboard.map(r => [...r]);
+        renderActiveTile();
+        autoSaveToLocalStorage();
+        showToast('📄 Pasted tile');
+      }
+    };
+    document.getElementById('btnUndo').onclick = undo;
+    document.getElementById('btnRedo').onclick = redo;
+
+    // View Guides
+    document.getElementById('chkShowGrid').onchange = (e) => {
+      state.showGrid = e.target.checked; renderActiveTile();
+    };
+    document.getElementById('chkSplitGuide').onchange = (e) => {
+      state.splitGuide = e.target.checked; renderActiveTile();
+    };
+    document.getElementById('chkCenterCross').onchange = (e) => {
+      state.centerCross = e.target.checked; renderActiveTile();
+    };
+    document.getElementById('chkTransparent0').onchange = (e) => {
+      state.transparentColor0 = e.target.checked; renderPreviews();
+    };
+
+    document.getElementById('paletteSelect').onchange = (e) => {
+      const key = e.target.value;
+      if (PALETTES[key]) {
+        state.activePaletteKey = key;
+        state.palette = [...PALETTES[key]];
+        state.currentColorIndex = Math.min(state.currentColorIndex, state.palette.length - 1);
+        updatePaletteUI();
+        renderActiveTile();
+        autoSaveToLocalStorage();
+      }
+    };
+
+    // Quick Save Button
+    document.getElementById('btnQuickSave').onclick = triggerQuickSave;
+
+    // Export Modal
+    const modalExport = document.getElementById('modalExport');
+    document.getElementById('btnOpenExportModal').onclick = () => modalExport.classList.add('open');
+    document.getElementById('btnCloseExportModal').onclick = () => modalExport.classList.remove('open');
+
+    document.getElementById('btnDownloadPNGSheet').onclick = async () => {
+      const blob = await generateSheetPNGBlob(16);
+      downloadBlob(blob, `font_sheet_${state.tileW}x${state.tileH}.png`);
+      showToast('✓ ดาวน์โหลด PNG Tile Sheet เรียบร้อย!');
+    };
+    document.getElementById('btnDownloadTBLFile').onclick = () => {
+      downloadTBLFile();
+      showToast('✓ ดาวน์โหลดไฟล์ .tbl เรียบร้อย!');
+    };
+    document.getElementById('btnDownloadProjectJSON').onclick = () => {
+      downloadProjectJSON();
+      showToast('✓ ดาวน์โหลดไฟล์ Project .json เรียบร้อย!');
+    };
+    document.getElementById('btnDownloadGBBinary').onclick = () => {
+      downloadGBBinary();
+      showToast('✓ ดาวน์โหลดไฟล์ 2BPP Binary เรียบร้อย!');
+    };
+
+    // Single Tile PNG Save
+    document.getElementById('btnSaveSingleTilePNG').onclick = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = state.tileW;
+      canvas.height = state.tileH;
+      const ctx = canvas.getContext('2d');
+      const tile = state.tiles[state.activeTileIndex];
+
+      for (let y = 0; y < state.tileH; y++) {
+        for (let x = 0; x < state.tileW; x++) {
+          const cIdx = tile[y][x];
+          if (state.transparentColor0 && cIdx === 0) continue;
+          ctx.fillStyle = state.palette[cIdx] || '#000';
+          ctx.fillRect(x, y, 1, 1);
+        }
+      }
+
+      canvas.toBlob(blob => {
+        const hex = state.activeTileIndex.toString(16).toUpperCase().padStart(2, '0');
+        const char = state.tableMap[hex] ? `_${state.tableMap[hex]}` : '';
+        downloadBlob(blob, `tile_0x${hex}${char}.png`);
+      });
+    };
+
+    // New Project Wizard
+    const modalNewProject = document.getElementById('modalNewProject');
+    document.getElementById('btnNewProjectWizard').onclick = () => modalNewProject.classList.add('open');
+    document.getElementById('btnCloseWizard').onclick = () => modalNewProject.classList.remove('open');
+
+    document.querySelectorAll('.wizard-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        opt.parentElement.querySelectorAll('.wizard-option').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        opt.querySelector('input[type="radio"]').checked = true;
+      });
+    });
+
+    document.getElementById('btnCreateProjectSubmit').onclick = () => {
+      const plat = document.getElementById('wizardPlatformSelect').value;
+      const tpl = document.querySelector('input[name="wizTemplate"]:checked').value;
+
+      if (plat === 'gb_8x8') { state.tileW = 8; state.tileH = 8; }
+      else if (plat === 'gb_8x16') { state.tileW = 8; state.tileH = 16; }
+      else if (plat === 'snes_16x12') { state.tileW = 16; state.tileH = 12; }
+      else if (plat === 'snes_16x16') { state.tileW = 16; state.tileH = 16; }
+
+      initTiles(256);
+      updatePreviewSizes();
+
+      if (tpl === 'thai' || tpl === 'png') {
+        loadPNGFromDataURL(DEFAULT_FONT_SHEET_DATA_URL, () => {
+          modalNewProject.classList.remove('open');
+          showToast('✓ เริ่มต้นโปรเจกต์ใหม่เรียบร้อย!');
+        });
+      } else {
+        renderCharacterList();
+        renderActiveTile();
+        autoSaveToLocalStorage();
+        modalNewProject.classList.remove('open');
+        showToast('✓ เริ่มต้นโปรเจกต์กระดาษเปล่าเรียบร้อย!');
+      }
+    };
+
+    // Disk Save Target Setup Modal
+    const modalDiskSaveSetup = document.getElementById('modalDiskSaveSetup');
+    document.getElementById('btnCloseDiskSaveSetup').onclick = () => modalDiskSaveSetup.classList.remove('open');
+
+    document.getElementById('btnConfirmDiskSaveTarget').onclick = async () => {
+      const selectedType = document.querySelector('input[name="diskSaveTarget"]:checked').value;
+      state.diskSaveType = selectedType;
+      modalDiskSaveSetup.classList.remove('open');
+
+      try {
+        if (selectedType === 'png') {
+          state.diskFileHandle = await window.showSaveFilePicker({
+            suggestedName: `font_sheet_${state.tileW}x${state.tileH}.png`,
+            types: [{ description: 'PNG Image', accept: { 'image/png': ['.png'] } }]
+          });
+        } else {
+          state.diskFileHandle = await window.showSaveFilePicker({
+            suggestedName: 'font_project.json',
+            types: [{ description: 'JSON Project', accept: { 'application/json': ['.json'] } }]
+          });
+        }
+        await writeToDiskHandle();
+      } catch (err) {
+        console.warn('File picker cancelled or error:', err);
+      }
+    };
+
+    // Drag and Drop
+    window.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      document.body.style.opacity = '0.85';
+    });
+    window.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      document.body.style.opacity = '1';
+    });
+    window.addEventListener('drop', (e) => {
+      e.preventDefault();
+      document.body.style.opacity = '1';
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        const file = e.dataTransfer.files[0];
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (evt) => loadPNGFromDataURL(evt.target.result, () => showToast(`✓ โหลด ${file.name} เรียบร้อย!`));
+          reader.readAsDataURL(file);
+        } else if (file.name.endsWith('.json')) {
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            try {
+              const data = JSON.parse(evt.target.result);
+              if (data.tiles) {
+                state.tiles = data.tiles;
+                state.tileW = data.tileW || 8;
+                state.tileH = data.tileH || 8;
+                renderCharacterList();
+                renderActiveTile();
+                autoSaveToLocalStorage();
+                showToast(`✓ โหลดโปรเจกต์ ${file.name} เรียบร้อย!`);
+              }
+            } catch (err) { alert('Invalid JSON: ' + err.message); }
+          };
+          reader.readAsText(file);
+        }
+      }
+    });
+
+    // Compositor Controls
+    compBaseTile.onchange = updateCompositor;
+    compVowelTile.onchange = updateCompositor;
+    compToneTile.onchange = updateCompositor;
+
+    document.getElementById('btnVowelDyMinus').onclick = () => {
+      state.comp.vowelDy--; updateCompositor();
+    };
+    document.getElementById('btnVowelDyPlus').onclick = () => {
+      state.comp.vowelDy++; updateCompositor();
+    };
+    document.getElementById('btnToneDyMinus').onclick = () => {
+      state.comp.toneDy--; updateCompositor();
+    };
+    document.getElementById('btnToneDyPlus').onclick = () => {
+      state.comp.toneDy++; updateCompositor();
+    };
+
+    document.getElementById('btnBakeToTile').onclick = () => {
+      const slot = prompt('ระบุรหัสไทล์ Hex (เช่น 80) เพื่อบันทึกตัวอักษรผสมนี้ลงไป:', '80');
+      if (slot === null) return;
+      const targetIdx = parseInt(slot, 16);
+      if (isNaN(targetIdx) || targetIdx < 0 || targetIdx >= state.tiles.length) {
+        alert('Invalid index!'); return;
+      }
+      recordHistory();
+      state.tiles[targetIdx] = getCompositePixels();
+      setActiveTile(targetIdx);
+      autoSaveToLocalStorage();
+      showToast(`✓ รวมตัวอักษรลงไทล์ 0x${targetIdx.toString(16).toUpperCase()} สำเร็จ!`);
+    };
+
+    /* ==========================================================
+       8. BOOTSTRAP APPLICATION
+       ========================================================== */
+    initTiles(256);
+    updatePreviewSizes();
+    updatePaletteUI();
+
+    // Check LocalStorage first, fallback to default font sheet
+    if (!tryRestoreFromLocalStorage()) {
+      loadPNGFromDataURL(DEFAULT_FONT_SHEET_DATA_URL);
+    } else {
+      renderCharacterList();
+      renderActiveTile();
+    }
+  </script>
+</body>
+</html>
